@@ -1,13 +1,15 @@
-const swaggerAutogen = require('swagger-autogen')();
+const { config } = require('dotenv');
 
+const swaggerAutogen = require('swagger-autogen')();
+config()
 const doc = {
   info: {
     title: 'API_Trilha',
     description: 'API para cadastro de novos usuários/locais',
     version: '1.0.0'
   },
-  host: '/localhost:9000',
-  security: [{"apiKeyAuth": []}],
+  host: `/localhost:${process.env.PORT_API}`,
+  security: [{ "apiKeyAuth": [] }],
   securityDefinitions: {
     apiKeyAuth: {
       type: 'apiKey',

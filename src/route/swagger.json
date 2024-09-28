@@ -5,7 +5,7 @@
     "description": "API para cadastro de novos usuários/locais",
     "version": "1.0.0"
   },
-  "host": "/localhost:9000",
+  "host": "/localhost:3000",
   "basePath": "/",
   "schemes": [
     "http"
@@ -257,24 +257,35 @@
             "type": "string"
           },
           {
-            "name": "Cadastra novos locais!",
+            "name": "body",
             "in": "body",
+            "description": "Cadastra novos locais!",
             "schema": {
               "type": "object",
               "properties": {
                 "nome": {
+                  "type": "string",
                   "example": "Trilha Morro das aranhas"
                 },
                 "descricao": {
+                  "type": "string",
                   "example": "Trilha de aproximadamente 45 min de subida, com uma vista para as praias do Santinho, Moçambique e Ingleses"
                 },
                 "cep": {
+                  "type": "string",
                   "example": "88058-700"
                 },
                 "usuarioId": {
+                  "type": "string",
                   "example": "5"
                 }
-              }
+              },
+              "required": [
+                "nome",
+                "descricao",
+                "cep",
+                "usuarioId"
+              ]
             }
           }
         ],
