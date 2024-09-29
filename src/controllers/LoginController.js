@@ -1,4 +1,3 @@
-const { Router } = require('express');
 const Usuario = require('../models/Usuario');
 const { sign } = require('jsonwebtoken');
 
