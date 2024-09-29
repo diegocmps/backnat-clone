@@ -108,20 +108,17 @@ class LocalController {
     */
         try {
 
-            const usuarioId = req.query.usuario_id; // Ajustando para 'usuario_id'
-            const local = await Local.findOne({ where: { id: req.params.local_id, usuarioId: usuarioId } });
+            const usuarioId = req.payload.sub; // Ajustando para 'usuarioId'
+            const localDeletar = await Local.findOne({ where: { id: req.params.localId, usuarioId: usuarioId } });
 
-            if (!local) {
-                console.log("Local não encontrado ou permissão negada.");
-                return res.status(404).json({ message: 'Local não encontrado ou acesso negado' })
+            if (!localDeletar) {
+                return res.status(404).json({ message: 'Local não encontrado.' })
             }
-            await local.destroy();
-            console.log("Local excluído com sucesso.");
+            await localDeletar.destroy();
 
             res.status(200).json({ message: 'Local excluído com sucesso.' });
 
         } catch (error) {
-            console.error("Erro ao excluir o local:", error);
             return res.status(500).json({ message: 'Não foi possivel excluir o local' });
         }
     }
@@ -135,7 +132,7 @@ class LocalController {
     } 
     */
         try {
-            const usuarioId = req.query.usuario_Id; // Ajuste para acessar o usuario_Id da consulta
+            const usuarioId = req.payload.sub; // Ajuste para acessar o usuario_Id da consulta
             const locais = await Local.findAll({ where: { usuarioId: usuarioId } });
 
 
@@ -147,7 +144,6 @@ class LocalController {
             res.status(200).json(locais);
 
         } catch (error) {
-            console.error(error);
             return res.status(500).json({ error: 'Não foi possível obter os locais cadastrados' });
         }
     }
@@ -162,15 +158,16 @@ class LocalController {
   
   */
         try {
-            const usuarioId = req.query.usuario_id; // Ajustando para 'usuario_id'
-            const local = await Local.findOne({ where: { id: req.params.local_id, usuarioId: usuarioId } });
+            const usuarioId = req.payload.sub; // Ajustando para 'usuario_id'
+            const local = await Local.findOne({ where: { id: req.params.localId, usuarioId: usuarioId } });
+
             if (!local) {
                 return res.status(404).json({ message: 'Local não encontrado ou acesso não permitido' });
             }
+
             const googleMapsLink = `https://www.google.com/maps?q=${local.latitude},${local.longitude}`;
             res.status(200).json({ googleMapsLink });
         } catch (error) {
-            console.error(error);
             return res.status(500).json({ error: 'Não foi possível obter o link do Google Maps para o local' });
         }
     }
