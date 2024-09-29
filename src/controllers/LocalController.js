@@ -18,7 +18,7 @@ class LocalController {
             }
             */
         try {
-            const usuarioId = req.payload.sub
+            const usuarioId = req.payload.sub;
 
             const {
                 nome,
@@ -68,7 +68,6 @@ class LocalController {
     }
     */
         try {
-            console.log("Iniciando atualização do local...");
 
             const { nome, descricao, cep, } = req.body;
 
@@ -78,30 +77,30 @@ class LocalController {
             }
 
 
-            const usuarioId = req.query.usuario_id; // Ajustando para 'usuario_id'
-            const local = await Local.findOne({ where: { id: req.params.local_id, usuarioId: usuarioId } });
-            if (!local) {
-                console.log("Local não encontrado ou permissão negada.");
-                return res.status(404).json({ message: 'Local não encontrado ou você não tem permissão para alterar este local.' });
+            const usuarioId = req.payload.sub; // Ajustando para 'usuario_id'
+            const localAtualizar = await Local.findOne({ where: { id: req.params.localId, usuarioId: usuarioId } });
+
+            if (!localAtualizar) {
+                return res.status(404).json({ message: 'Local não encontrado!' });
             }
 
 
-            local.nome = nome;
-            local.descricao = descricao;
+            localAtualizar.nome = nome;
+            localAtualizar.descricao = descricao;
+            localAtualizar.cep = cep;
 
-            await local.save();
+            await localAtualizar.save();
 
-            console.log("Local atualizado com sucesso.");
-            res.status(200).json(local);
+            res.status(200).json(localAtualizar);
+
         } catch (error) {
-            console.error(error);
             return res.status(500).json({ error: 'Não foi possível atualizar as informações do local.' });
         }
     }
 
     async deletarLocal(req, res) {
         /*  #swagger.tags = ['Local'],  
-        #swagger.parameters['Usuario_id'] = {
+        #swagger.parameters['usuarioId'] = {
             in: 'query',
             description: 'Excluir local',
             type: 'string'
