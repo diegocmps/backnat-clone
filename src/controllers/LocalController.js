@@ -13,20 +13,21 @@ class LocalController {
                     $nome: 'Trilha Morro das aranhas',
                     $descricao: 'Trilha de aproximadamente 45 min de subida, com uma vista para as praias do Santinho, Moçambique e Ingleses',
                     $cep: '88058-700',
-                    $usuarioId: '5'
+                    
                 }   
             }
             */
         try {
+            const usuarioId = req.payload.sub
+
             const {
                 nome,
                 descricao,
                 cep,
-                usuarioId
             } = req.body;
 
             if (!nome || !cep || !usuarioId) {
-                return res.status(400).json({ message: 'Nome, endereço e ID são obrigatórios!' });
+                return res.status(400).json({ message: 'Nome, endereço e CEP são obrigatórios!' });
             }
 
             const response = await axios.get(`https://nominatim.openstreetmap.org/search?format=json&postalcode=${cep}&country=Brazil&limit=1`);
