@@ -1,5 +1,6 @@
 const Usuario = require('../models/Usuario');
 const { sign } = require('jsonwebtoken');
+const jwt = require('jsonwebtoken');
 
 class LoginController {
     async login(req, res) {
@@ -7,14 +8,13 @@ class LoginController {
            #swagger.tags = ['Login'],
            #swagger.parameters = ['body'] ={
              in: 'body',
-             description:'Realizar login!',
+             description: 'Realizar login!',
              schema: {
-              $email: 'taline.araujo@hotmail.com',
-              $senha: 'teste123'
-              
-          }   
-      }
-      */
+                $email: 'taline.araujo@hotmail.com',
+                $senha: 'teste123'
+             }   
+          }
+        */
         try {
             const email = req.body.email;
             const senha = req.body.senha;
@@ -36,14 +36,15 @@ class LoginController {
             }
 
             const payload = { sub: usuario.id, email: usuario.email, nome: usuario.nome };
-            const token = sign(payload, process.env.SECRET_JWT);
+            const token = jwt.sign(payload, process.env.SECRET_JWT, { expiresIn: '1h' });
 
-            res.status(200).json({ token: token });
+            
+            return res.json({ user: { id: usuario.id, nome: usuario.nome, email: usuario.email }, token: token });
         } catch (error) {
             console.error(error.message);
-            res.status(500).json({ error: 'Erro ao logar!' });
+            return res.status(500).json({ error: 'Erro ao logar!' });
         }
     }
 }
 
-module.exports = new LoginController;
+module.exports = new LoginController();
