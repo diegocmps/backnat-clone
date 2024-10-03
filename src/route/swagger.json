@@ -274,17 +274,12 @@
                 "cep": {
                   "type": "string",
                   "example": "88058-700"
-                },
-                "usuarioId": {
-                  "type": "string",
-                  "example": "5"
                 }
               },
               "required": [
                 "nome",
                 "descricao",
-                "cep",
-                "usuarioId"
+                "cep"
               ]
             }
           }
@@ -310,11 +305,6 @@
         ],
         "description": "",
         "parameters": [
-          {
-            "name": "usuario_Id",
-            "in": "query",
-            "type": "string"
-          },
           {
             "name": "authorization",
             "in": "header",
@@ -343,7 +333,7 @@
         }
       }
     },
-    "/local/{local_id}/maps": {
+    "/local/{localId}/maps": {
       "get": {
         "tags": [
           "Local"
@@ -351,14 +341,9 @@
         "description": "",
         "parameters": [
           {
-            "name": "local_id",
+            "name": "localId",
             "in": "path",
             "required": true,
-            "type": "string"
-          },
-          {
-            "name": "usuario_id",
-            "in": "query",
             "type": "string"
           },
           {
@@ -389,7 +374,7 @@
         }
       }
     },
-    "/local/{local_id}": {
+    "/local/{localId}": {
       "delete": {
         "tags": [
           "Local"
@@ -397,14 +382,9 @@
         "description": "",
         "parameters": [
           {
-            "name": "local_id",
+            "name": "localId",
             "in": "path",
             "required": true,
-            "type": "string"
-          },
-          {
-            "name": "usuario_id",
-            "in": "query",
             "type": "string"
           },
           {
@@ -413,7 +393,7 @@
             "type": "string"
           },
           {
-            "name": "Usuario_id",
+            "name": "usuarioId",
             "in": "query",
             "description": "Excluir local",
             "type": "string"
@@ -441,14 +421,9 @@
         "description": "",
         "parameters": [
           {
-            "name": "local_id",
+            "name": "localId",
             "in": "path",
             "required": true,
-            "type": "string"
-          },
-          {
-            "name": "usuario_id",
-            "in": "query",
             "type": "string"
           },
           {
