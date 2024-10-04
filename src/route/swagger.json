@@ -60,6 +60,34 @@
                 "endereco": {
                   "type": "string",
                   "example": "Vargem pequena"
+                },
+                "cep": {
+                  "type": "string",
+                  "example": "12345-678"
+                },
+                "rua": {
+                  "type": "string",
+                  "example": "Rua Exemplo"
+                },
+                "numero": {
+                  "type": "string",
+                  "example": "123"
+                },
+                "complemento": {
+                  "type": "string",
+                  "example": "Apto 1"
+                },
+                "bairro": {
+                  "type": "string",
+                  "example": "Bairro Exemplo"
+                },
+                "cidade": {
+                  "type": "string",
+                  "example": "Cidade Exemplo"
+                },
+                "estado": {
+                  "type": "string",
+                  "example": "Estado Exemplo"
                 }
               },
               "required": [
@@ -67,7 +95,15 @@
                 "email",
                 "cpf",
                 "senha",
-                "data_nascimento"
+                "data_nascimento",
+                "endereco",
+                "cep",
+                "rua",
+                "numero",
+                "complemento",
+                "bairro",
+                "cidade",
+                "estado"
               ]
             }
           }
@@ -196,6 +232,109 @@
             "description": "Internal Server Error"
           }
         }
+      },
+      "put": {
+        "tags": [
+          "Usuario"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "description": "Edita um usuário existente! Não pode editar o CPF.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "nome": {
+                  "type": "string",
+                  "example": "Diego Campos"
+                },
+                "email": {
+                  "type": "string",
+                  "example": "diego.campos@hotmail.com"
+                },
+                "sexo": {
+                  "type": "string",
+                  "example": "Masculino"
+                },
+                "data_nascimento": {
+                  "type": "string",
+                  "example": "1996-05-02"
+                },
+                "cep": {
+                  "type": "string",
+                  "example": "12345-678"
+                },
+                "rua": {
+                  "type": "string",
+                  "example": "Rua Atualizada"
+                },
+                "numero": {
+                  "type": "string",
+                  "example": "456"
+                },
+                "complemento": {
+                  "type": "string",
+                  "example": "Apto 2"
+                },
+                "bairro": {
+                  "type": "string",
+                  "example": "Bairro Atualizado"
+                },
+                "cidade": {
+                  "type": "string",
+                  "example": "Cidade Atualizada"
+                },
+                "estado": {
+                  "type": "string",
+                  "example": "Estado Atualizado"
+                }
+              },
+              "required": [
+                "nome",
+                "email",
+                "sexo",
+                "data_nascimento",
+                "cep",
+                "rua",
+                "numero",
+                "complemento",
+                "bairro",
+                "cidade",
+                "estado"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
       }
     },
     "/login/": {
@@ -274,17 +413,12 @@
                 "cep": {
                   "type": "string",
                   "example": "88058-700"
-                },
-                "usuarioId": {
-                  "type": "string",
-                  "example": "5"
                 }
               },
               "required": [
                 "nome",
                 "descricao",
-                "cep",
-                "usuarioId"
+                "cep"
               ]
             }
           }
@@ -310,11 +444,6 @@
         ],
         "description": "",
         "parameters": [
-          {
-            "name": "usuario_Id",
-            "in": "query",
-            "type": "string"
-          },
           {
             "name": "authorization",
             "in": "header",
@@ -343,7 +472,7 @@
         }
       }
     },
-    "/local/{local_id}/maps": {
+    "/local/{localId}/maps": {
       "get": {
         "tags": [
           "Local"
@@ -351,14 +480,9 @@
         "description": "",
         "parameters": [
           {
-            "name": "local_id",
+            "name": "localId",
             "in": "path",
             "required": true,
-            "type": "string"
-          },
-          {
-            "name": "usuario_id",
-            "in": "query",
             "type": "string"
           },
           {
@@ -389,7 +513,7 @@
         }
       }
     },
-    "/local/{local_id}": {
+    "/local/{localId}": {
       "delete": {
         "tags": [
           "Local"
@@ -397,14 +521,9 @@
         "description": "",
         "parameters": [
           {
-            "name": "local_id",
+            "name": "localId",
             "in": "path",
             "required": true,
-            "type": "string"
-          },
-          {
-            "name": "usuario_id",
-            "in": "query",
             "type": "string"
           },
           {
@@ -413,7 +532,7 @@
             "type": "string"
           },
           {
-            "name": "Usuario_id",
+            "name": "usuarioId",
             "in": "query",
             "description": "Excluir local",
             "type": "string"
@@ -441,14 +560,9 @@
         "description": "",
         "parameters": [
           {
-            "name": "local_id",
+            "name": "localId",
             "in": "path",
             "required": true,
-            "type": "string"
-          },
-          {
-            "name": "usuario_id",
-            "in": "query",
             "type": "string"
           },
           {
