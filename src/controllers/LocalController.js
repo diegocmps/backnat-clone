@@ -1,36 +1,29 @@
-const Local = require('../models/Local')
-const axios = require('axios')
+const Local = require('../models/Local');
+const axios = require('axios');
 
 class LocalController {
     async adicionarLocal(req, res) {
-
         /*
-                #swagger.tags = ['Local'],
-                #swagger.parameters = ['body'] ={
-                   in: 'body',
-                   description:'Cadastra novos locais!',
-                   schema: {
+            #swagger.tags = ['Local'],
+            #swagger.parameters = ['body'] ={
+                in: 'body',
+                description:'Cadastra novos locais!',
+                schema: {
                     $nome: 'Trilha Morro das aranhas',
                     $descricao: 'Trilha de aproximadamente 45 min de subida, com uma vista para as praias do Santinho, Moçambique e Ingleses',
                     $cep: '88058-700',
-                    
                 }   
             }
-            */
+        */
         try {
             const usuarioId = req.payload.sub;
-
-            const {
-                nome,
-                descricao,
-                cep,
-            } = req.body;
+            const { nome, descricao, cep } = req.body;
 
             if (!nome || !cep || !usuarioId) {
                 return res.status(400).json({ message: 'Nome, endereço e CEP são obrigatórios!' });
             }
 
-            const response = await axios.get(`https://nominatim.openstreetmap.org/search?format=json&postalcode=${cep}&country=Brazil&limit=1`);
+            const response = await axios.get('https://cep.awesomeapi.com.br/json');
 
             if (response.data.length === 0) {
                 return res.status(400).json({ message: 'Endereço não localizado' });
@@ -47,43 +40,38 @@ class LocalController {
             });
 
             res.status(201).json(novoLocal);
-
         } catch (error) {
             console.error(error);
             return res.status(500).json({ error: 'Não foi possível cadastrar o local' });
         }
     }
+
     async atualizarLocal(req, res) {
         /*
          #swagger.tags = ['Local'],
          #swagger.parameters = ['body'] ={
-           in: 'body',
-           description:'Atualizar endereço!',
-           schema: {
-            $nome: 'Morro das Aranhas',
-            $descrição: 'Trilha facil',
-            $cep: '88058-700'
-            
-        }   
-    }
-    */
+            in: 'body',
+            description:'Atualizar endereço!',
+            schema: {
+                $nome: 'Morro das Aranhas',
+                $descricao: 'Trilha fácil',
+                $cep: '88058-700'
+            }   
+        }
+        */
         try {
-
-            const { nome, descricao, cep, } = req.body;
-
+            const { nome, descricao, cep } = req.body;
 
             if (!nome || !cep) {
                 return res.status(400).json({ message: 'Nome e endereço são obrigatórios!' });
             }
 
-
-            const usuarioId = req.payload.sub; // Ajustando para 'usuario_id'
-            const localAtualizar = await Local.findOne({ where: { id: req.params.localId, usuarioId: usuarioId } });
+            const usuarioId = req.payload.sub;
+            const localAtualizar = await Local.findOne({ where: { id: req.params.localId, usuarioId } });
 
             if (!localAtualizar) {
                 return res.status(404).json({ message: 'Local não encontrado!' });
             }
-
 
             localAtualizar.nome = nome;
             localAtualizar.descricao = descricao;
@@ -92,74 +80,114 @@ class LocalController {
             await localAtualizar.save();
 
             res.status(200).json(localAtualizar);
-
         } catch (error) {
             return res.status(500).json({ error: 'Não foi possível atualizar as informações do local.' });
         }
     }
 
     async deletarLocal(req, res) {
-        /*  #swagger.tags = ['Local'],  
+        /*  
+        #swagger.tags = ['Local'],  
         #swagger.parameters['usuarioId'] = {
             in: 'query',
             description: 'Excluir local',
             type: 'string'
-    } 
-    */
+        } 
+        */
         try {
-
-            const usuarioId = req.payload.sub; // Ajustando para 'usuarioId'
-            const localDeletar = await Local.findOne({ where: { id: req.params.localId, usuarioId: usuarioId } });
+            const usuarioId = req.payload.sub;
+            const localDeletar = await Local.findOne({ where: { id: req.params.localId, usuarioId } });
 
             if (!localDeletar) {
-                return res.status(404).json({ message: 'Local não encontrado.' })
+                return res.status(404).json({ message: 'Local não encontrado.' });
             }
             await localDeletar.destroy();
 
             res.status(200).json({ message: 'Local excluído com sucesso.' });
-
         } catch (error) {
-            return res.status(500).json({ message: 'Não foi possivel excluir o local' });
+            return res.status(500).json({ message: 'Não foi possível excluir o local' });
         }
     }
 
-    async getLocaisUsuarioLogado(req, res) {
+    async listarTodosOsLocais(req, res) {
         /* #swagger.tags = ['Local'],  
-        #swagger.parameters['Locais'] = {
-            in: 'query',
-            description: 'Buscar todos os locais',
-            type: 'string'
-    } 
-    */
+        #swagger.description = 'Buscar todos os locais cadastrados'
+        */
         try {
-            const usuarioId = req.payload.sub; // Ajuste para acessar o usuario_Id da consulta
-            const locais = await Local.findAll({ where: { usuarioId: usuarioId } });
-
+            const locais = await Local.findAll();
 
             if (!locais || locais.length === 0) {
                 return res.status(404).json({ message: 'Nenhum local cadastrado' });
             }
 
-
             res.status(200).json(locais);
-
         } catch (error) {
             return res.status(500).json({ error: 'Não foi possível obter os locais cadastrados' });
         }
     }
+
+    async listarLocaisPorUsuario(req, res) {
+        /* #swagger.tags = ['Local'],  
+        #swagger.description = 'Listar locais cadastrados pelo usuário logado'
+        */
+        try {
+            const usuarioId = req.payload.sub;
+            const locais = await Local.findAll({ where: { usuarioId } });
+
+            if (!locais || locais.length === 0) {
+                return res.status(404).json({ message: 'Nenhum local cadastrado por este usuário' });
+            }
+
+            res.status(200).json(locais);
+        } catch (error) {
+            return res.status(500).json({ error: 'Não foi possível obter os locais cadastrados' });
+        }
+    }
+
+    async exibirLocal(req, res) {
+        /* #swagger.tags = ['Local'],  
+        #swagger.description = 'Exibir local específico do usuário'
+        #swagger.parameters['localId'] = {
+            in: 'path',
+            description: 'ID do local',
+            required: true,
+            type: 'string'
+        }
+        */
+        try {
+            const usuarioId = req.payload.sub;
+            const localId = req.params.localId;
+
+            console.log("usuarioId:", usuarioId);
+            console.log("localId:", localId);
+
+            const local = await Local.findOne({ where: { id: localId, usuarioId } });
+
+            console.log("Local encontrado:", local);
+
+            if (!local) {
+                return res.status(404).json({ message: 'Local não encontrado ou acesso não permitido' });
+            }
+
+            res.status(200).json(local);
+        } catch (error) {
+            console.error("Erro ao buscar o local:", error);
+            return res.status(500).json({ error: 'Não foi possível obter o local' });
+        }
+    }
+
     async getLinkGoogleMaps(req, res) {
         /*
-      #swagger.tags = ['Local'],  
-      #swagger.parameters['Local_id'] = {
-          in: 'query',
-          description: 'Filtrar local pelo ID',
-          type: 'string'
-  }
-  
-  */
+          #swagger.tags = ['Local'],  
+          #swagger.parameters['Local_id'] = {
+              in: 'query',
+              description: 'Filtrar local pelo ID',
+              type: 'string'
+        }
+        */
         try {
-            const usuarioId = req.payload.sub; // Ajustando para 'usuario_id'
-            const local = await Local.findOne({ where: { id: req.params.localId, usuarioId: usuarioId } });
+            const usuarioId = req.payload.sub;
+            const local = await Local.findOne({ where: { id: req.params.localId, usuarioId } });
 
             if (!local) {
                 return res.status(404).json({ message: 'Local não encontrado ou acesso não permitido' });
@@ -173,4 +201,4 @@ class LocalController {
     }
 }
 
-module.exports = new LocalController;
+module.exports = new LocalController();
