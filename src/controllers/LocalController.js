@@ -4,47 +4,53 @@ const axios = require('axios');
 class LocalController {
     async adicionarLocal(req, res) {
         /*
-            #swagger.tags = ['Local'],
-            #swagger.parameters = ['body'] ={
+            #swagger.tags = ['Local']
+            #swagger.parameters['body'] = {
                 in: 'body',
-                description:'Cadastra novos locais!',
+                description: 'Cadastra novos locais!',
                 schema: {
                     $nome: 'Trilha Morro das aranhas',
-                    $descricao: 'Trilha de aproximadamente 45 min de subida, com uma vista para as praias do Santinho, Moçambique e Ingleses',
+                    $descricao: 'Trilha com vista para as praias do Santinho, Moçambique e Ingleses',
                     $cep: '88058-700',
-                }   
+                }
             }
         */
         try {
             const usuarioId = req.payload.sub;
             const { nome, descricao, cep } = req.body;
 
-            if (!nome || !cep || !usuarioId) {
-                return res.status(400).json({ message: 'Nome, endereço e CEP são obrigatórios!' });
+            if (!nome || !cep) {
+                return res.status(400).json({ message: 'Nome e CEP são obrigatórios!' });
             }
 
-            const response = await axios.get('https://cep.awesomeapi.com.br/json');
+            const response = await axios.get(`https://cep.awesomeapi.com.br/json/${cep}`);
 
-            if (response.data.length === 0) {
+            if (!response.data || response.data.length === 0) {
                 return res.status(400).json({ message: 'Endereço não localizado' });
             }
 
-            const { lat, lon } = response.data[0];
+            const { address_name: rua, district: bairro, city: cidade, state: estado, lat, lng: lon } = response.data;
 
             const novoLocal = await Local.create({
                 nome,
                 descricao,
+                cep,
+                rua,
+                bairro,
+                cidade,
+                estado,
                 latitude: parseFloat(lat),
                 longitude: parseFloat(lon),
                 usuarioId
             });
 
-            res.status(201).json(novoLocal);
+            return res.status(201).json(novoLocal);
         } catch (error) {
             console.error(error);
-            return res.status(500).json({ error: 'Não foi possível cadastrar o local' });
+            return res.status(500).json({ message: 'Erro ao cadastrar o local', error: error.message });
         }
     }
+
 
     async atualizarLocal(req, res) {
         /*
@@ -60,27 +66,45 @@ class LocalController {
         }
         */
         try {
+            const usuarioId = req.payload.sub;
             const { nome, descricao, cep } = req.body;
 
             if (!nome || !cep) {
-                return res.status(400).json({ message: 'Nome e endereço são obrigatórios!' });
+                return res.status(400).json({ message: 'Nome e CEP são obrigatórios!' });
             }
 
-            const usuarioId = req.payload.sub;
+            const response = await axios.get(`https://cep.awesomeapi.com.br/json/${cep}`);
+
+            if (!response.data || response.data.length === 0) {
+                return res.status(400).json({ message: 'Endereço não localizado' });
+            }
+
+            const { address_name: rua, district: bairro, city: cidade, state: estado, lat, lng: lon } = response.data;
+
+
             const localAtualizar = await Local.findOne({ where: { id: req.params.localId, usuarioId } });
 
             if (!localAtualizar) {
                 return res.status(404).json({ message: 'Local não encontrado!' });
             }
 
+
             localAtualizar.nome = nome;
             localAtualizar.descricao = descricao;
             localAtualizar.cep = cep;
+            localAtualizar.rua = rua;
+            localAtualizar.bairro = bairro;
+            localAtualizar.cidade = cidade;
+            localAtualizar.estado = estado;
+            localAtualizar.latitude = parseFloat(lat);
+            localAtualizar.longitude = parseFloat(lon);
 
+            // Salvando as alterações
             await localAtualizar.save();
 
             res.status(200).json(localAtualizar);
         } catch (error) {
+            console.error(error);
             return res.status(500).json({ error: 'Não foi possível atualizar as informações do local.' });
         }
     }
