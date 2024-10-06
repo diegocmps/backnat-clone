@@ -17,6 +17,26 @@ module.exports = {
       descricao: {
         type: Sequelize.TEXT
       },
+      cep: {
+        type: Sequelize.STRING,
+        allowNull: false
+      },
+      rua: {
+        type: Sequelize.STRING,
+        allowNull: false
+      },
+      bairro: {
+        type: Sequelize.STRING,
+        allowNull: false
+      },
+      cidade: {
+        type: Sequelize.STRING,
+        allowNull: false
+      },
+      estado: {
+        type: Sequelize.STRING,
+        allowNull: false
+      },
       latitude: {
         type: Sequelize.FLOAT
       },
@@ -29,7 +49,9 @@ module.exports = {
         references: {
           model: 'usuarios', 
           key: 'id'
-        }
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE'
       },
       createdAt: {
         type: Sequelize.DATE,
