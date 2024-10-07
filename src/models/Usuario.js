@@ -19,7 +19,7 @@ const Usuario = connection.define('usuario', {
     },
     sexo: {
         type: DataTypes.STRING
-    }, 
+    },
     senha: {
         type: DataTypes.STRING,
         allowNull: false
@@ -40,7 +40,7 @@ const Usuario = connection.define('usuario', {
         type: DataTypes.STRING,
         allowNull: false
     },
-    numero: { 
+    numero: {
         type: DataTypes.STRING,
         allowNull: false
     },
@@ -58,6 +58,10 @@ const Usuario = connection.define('usuario', {
     },
     estado: {
         type: DataTypes.STRING,
+        allowNull: false
+    },
+    isLogged: {
+        type: DataTypes.BOOLEAN,
         allowNull: false
     },
     createdAt: {
