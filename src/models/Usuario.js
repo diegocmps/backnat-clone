@@ -62,7 +62,8 @@ const Usuario = connection.define('usuario', {
     },
     isLogged: {
         type: DataTypes.BOOLEAN,
-        allowNull: false
+        allowNull: false,
+        defaultValue: false
     },
     createdAt: {
         type: DataTypes.DATE,
