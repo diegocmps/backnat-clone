@@ -38,7 +38,9 @@ class LoginController {
             const payload = { sub: usuario.id, email: usuario.email, nome: usuario.nome };
             const token = jwt.sign(payload, process.env.SECRET_JWT, { expiresIn: '1h' });
 
-            
+            usuario.isLogged = true;
+            await usuario.save()
+
             return res.json({ user: { id: usuario.id, nome: usuario.nome, email: usuario.email }, token: token });
         } catch (error) {
             console.error(error.message);

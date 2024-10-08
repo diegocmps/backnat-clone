@@ -44,7 +44,7 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false
       },
-      numero: { 
+      numero: {
         type: Sequelize.STRING,
         allowNull: false
       },
@@ -63,6 +63,11 @@ module.exports = {
       estado: {
         type: Sequelize.STRING,
         allowNull: false
+      },
+      isLogged: {
+        type: Sequelize.BOOLEAN,
+        allowNull: false,
+        defaultValue: false,
       },
       createdAt: {
         type: Sequelize.DATE,
