@@ -1,3 +1,4 @@
+const { compare } = require('bcryptjs');
 const Usuario = require('../models/Usuario');
 const { sign } = require('jsonwebtoken');
 const jwt = require('jsonwebtoken');
@@ -28,10 +29,12 @@ class LoginController {
             }
 
             const usuario = await Usuario.findOne({
-                where: { email: email, senha: senha }
+                where: { email: email }
             });
 
-            if (!usuario) {
+            const senhaDecoded = await compare(senha, usuario.senha)
+
+            if (!usuario || senhaDecoded == false) {
                 return res.status(404).json({ message: 'Não foi encontrado usuário correspondente aos dados fornecidos' });
             }
 

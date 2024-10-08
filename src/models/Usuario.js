@@ -1,5 +1,6 @@
 const { DataTypes } = require('sequelize');
 const { connection } = require('../database/connection');
+const { hash } = require('bcryptjs')
 
 const Usuario = connection.define('usuario', {
     id: {
@@ -74,5 +75,10 @@ const Usuario = connection.define('usuario', {
         defaultValue: DataTypes.NOW
     }
 });
+
+Usuario.beforeCreate(async (usuario) => {
+    usuario.senha = await hash(usuario.senha.toString(), 8)
+    return usuario
+})
 
 module.exports = Usuario;
