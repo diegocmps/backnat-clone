@@ -1,6 +1,5 @@
 const { compare } = require('bcryptjs');
 const Usuario = require('../models/Usuario');
-const { sign } = require('jsonwebtoken');
 const jwt = require('jsonwebtoken');
 
 class LoginController {
@@ -48,6 +47,26 @@ class LoginController {
         } catch (error) {
             console.error(error.message);
             return res.status(500).json({ error: 'Erro ao logar!' });
+        }
+    }
+
+    async logout(req, res) {
+        try {
+            const usuarioId = req.payload.sub
+            const usuarioLogado = await Usuario.findOne({
+                where: {
+                    id: usuarioId
+                }
+            })
+
+            usuarioLogado.isLogged = false
+            await usuarioLogado.save()
+
+            return res.status(200)
+
+        } catch (error) {
+            console.log(error)
+            return res.status(500).json("Erro Interno do Servidor")
         }
     }
 }
