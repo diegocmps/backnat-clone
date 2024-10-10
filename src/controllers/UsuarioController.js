@@ -35,7 +35,7 @@ class UsuarioController {
                 $estado: 'Estado Exemplo'
             }   
         }
-        */ 
+        */
         try {
             const {
                 nome,
@@ -52,36 +52,36 @@ class UsuarioController {
                 cidade,
                 estado
             } = req.body;
-    
+
             if (!nome) {
                 return res.status(400).json({ message: 'O nome é obrigatório' });
             }
-    
+
             if (!senha) {
                 return res.status(400).json({ message: 'A senha é obrigatória' });
             }
-    
+
             if (!email) {
                 return res.status(400).json({ message: 'O email é obrigatório' });
             }
-    
+
             const usuarioCadastrado = await Usuario.findOne({ where: { email } });
             if (usuarioCadastrado) {
                 return res.status(400).json({ error: true, message: 'Email já cadastrado!' });
             }
-    
+
             if (!cpf || !validarCPF(cpf)) {
                 return res.status(400).json({ message: 'CPF inválido' });
             }
-    
+
             if (!data_nascimento) {
                 return res.status(400).json({ message: 'A data de nascimento é obrigatória' });
             }
-    
+
             if (!data_nascimento.match(/\d{4}-\d{2}-\d{2}/)) {
                 return res.status(400).json({ message: 'A data de nascimento não está no formato correto' });
             }
-    
+
             const usuario = await Usuario.create({
                 nome,
                 email,
@@ -97,7 +97,7 @@ class UsuarioController {
                 cidade,
                 estado
             });
-    
+
             res.status(201).json(usuario);
         } catch (error) {
             console.error(error.message);
@@ -157,20 +157,23 @@ class UsuarioController {
             const { id } = req.params;
             const enderecoUsuario = await Local.findOne({ where: { usuarioId: id } });
 
+            // Verifica se o usuário possui endereços cadastrados
             if (enderecoUsuario) {
                 return res.status(400).json({ error: true, message: 'Este usuário não pode ser excluído pois possui endereços cadastrados.' });
             }
 
+            // Tenta excluir o usuário
             const usuarioExcluido = await Usuario.destroy({ where: { id } });
 
+            // Verifica se o usuário foi encontrado e excluído
             if (!usuarioExcluido) {
                 return res.status(404).json({ error: true, message: 'Usuário não encontrado.' });
             }
 
-            res.json({ message: 'Usuário excluído com sucesso.' });
+            return res.status(204).send();
         } catch (error) {
             console.error(error.message);
-            res.status(500).json({ error: 'Não foi possível excluir o usuário.' });
+            res.status(500).json({ error: true, message: 'Não foi possível excluir o usuário.' });
         }
     }
 
@@ -195,9 +198,9 @@ class UsuarioController {
             $estado: 'Estado Atualizado'
             }   
         }
-        */ 
+        */
         try {
-            const { id } = req.params; 
+            const { id } = req.params;
             const {
                 nome,
                 email,
@@ -213,13 +216,13 @@ class UsuarioController {
                 estado
             } = req.body;
 
-           
+
             const usuario = await Usuario.findByPk(id);
             if (!usuario) {
                 return res.status(404).json({ message: 'Usuário não encontrado!' });
             }
 
-            
+
             if (!nome) {
                 return res.status(400).json({ message: 'O nome é obrigatório' });
             }
@@ -228,18 +231,18 @@ class UsuarioController {
                 return res.status(400).json({ message: 'O email é obrigatório' });
             }
 
-            
+
             const usuarioCadastrado = await Usuario.findOne({ where: { email, id: { [Op.ne]: id } } });
             if (usuarioCadastrado) {
                 return res.status(400).json({ error: true, message: 'Email já cadastrado!' });
             }
 
-            
+
             await usuario.update({
                 nome,
                 email,
                 sexo,
-                senha, 
+                senha,
                 data_nascimento,
                 cep,
                 rua,
