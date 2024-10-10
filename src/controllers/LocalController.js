@@ -99,7 +99,6 @@ class LocalController {
             localAtualizar.latitude = parseFloat(lat);
             localAtualizar.longitude = parseFloat(lon);
 
-            // Salvando as alterações
             await localAtualizar.save();
 
             res.status(200).json(localAtualizar);
@@ -150,23 +149,21 @@ class LocalController {
         }
     }
 
-    async listarLocaisPorUsuario(req, res) {
-        /* #swagger.tags = ['Local'],  
-        #swagger.description = 'Listar locais cadastrados pelo usuário logado'
-        */
-        try {
-            const usuarioId = req.payload.sub;
-            const locais = await Local.findAll({ where: { usuarioId } });
+async listarLocaisPorUsuario(req, res) {
+    try {
+        const usuarioId = req.payload.sub;
+        const locais = await Local.findAll({ where: { usuarioId } });
 
-            if (!locais || locais.length === 0) {
-                return res.status(404).json({ message: 'Nenhum local cadastrado por este usuário' });
-            }
-
-            res.status(200).json(locais);
-        } catch (error) {
-            return res.status(500).json({ error: 'Não foi possível obter os locais cadastrados' });
+        if (!locais || locais.length === 0) {
+            return res.status(404).json({ message: 'Nenhum local cadastrado por este usuário' });
         }
+
+        res.status(200).json(locais);
+    } catch (error) {
+        return res.status(500).json({ error: 'Não foi possível obter os locais cadastrados' });
     }
+}
+
 
     async exibirLocal(req, res) {
         /* #swagger.tags = ['Local'],  
@@ -185,7 +182,7 @@ class LocalController {
             console.log("usuarioId:", usuarioId);
             console.log("localId:", localId);
 
-            const local = await Local.findOne({ where: { id: localId, usuarioId } });
+            const local = await Local.findOne({ where: { id: localId } });
 
             console.log("Local encontrado:", local);
 
@@ -211,7 +208,7 @@ class LocalController {
         */
         try {
             const usuarioId = req.payload.sub;
-            const local = await Local.findOne({ where: { id: req.params.localId, usuarioId } });
+            const local = await Local.findOne({ where: { id: req.params.localId } });
 
             if (!local) {
                 return res.status(404).json({ message: 'Local não encontrado ou acesso não permitido' });
