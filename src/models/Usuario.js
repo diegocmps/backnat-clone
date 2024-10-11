@@ -1,46 +1,84 @@
 const { DataTypes } = require('sequelize');
 const { connection } = require('../database/connection');
+const { hash } = require('bcryptjs')
 
 const Usuario = connection.define('usuario', {
     id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true
-      },
+    },
     nome: {
         type: DataTypes.STRING,
-        allowNull: false,
+        allowNull: false
     },
     email: {
         type: DataTypes.STRING,
         allowNull: false,
         unique: true,
-        lowercase: true,
+        lowercase: true
     },
     sexo: {
-        type: DataTypes.STRING,
-    }, 
+        type: DataTypes.STRING
+    },
     senha: {
         type: DataTypes.STRING,
-        allowNull: false,
-        select: false,
+        allowNull: false
     },
     data_nascimento: {
-        type: DataTypes.DATE,
-    },
-    endereco: {
-        type: DataTypes.STRING,
+        type: DataTypes.DATE
     },
     cpf: {
         type: DataTypes.STRING,
         allowNull: false,
-        unique: true,
-        
+        unique: true
+    },
+    cep: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    rua: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    numero: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    complemento: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
+    bairro: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    cidade: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    estado: {
+        type: DataTypes.STRING,
+        allowNull: false
+    },
+    isLogged: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false
     },
     createdAt: {
         type: DataTypes.DATE,
-        defaultValue: DataTypes.NOW,
+        defaultValue: DataTypes.NOW
+    },
+    updatedAt: {
+        type: DataTypes.DATE,
+        defaultValue: DataTypes.NOW
     }
 });
+
+Usuario.beforeCreate(async (usuario) => {
+    usuario.senha = await hash(usuario.senha.toString(), 8)
+    return usuario
+})
 
 module.exports = Usuario;
