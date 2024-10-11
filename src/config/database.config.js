@@ -8,16 +8,16 @@ module.exports = {
   password: process.env.DB_PASSWORD, //Qual a senha do seu usuário no postgres;
   database: process.env.DATABASE, //Qual o nome do seu database no postgres;
   port: process.env.DB_PORT, //Qual porta do seu postgres (Normalmente é a 5432);
-  // dialectOptions: {
-  //   ssl: {
-  //     rejectUnauthorized: true,
-  //     require: true
-  //   }
-  // },
-  // pool: {
-  //   max: 5,
-  //   min: 0,
-  //   acquire: 30000,
-  //   idle: 10000 // idle timeout in milliseconds
-  // }
+  dialectOptions: {
+    ssl: {
+      rejectUnauthorized: true,
+      require: true
+    }
+  },
+  pool: {
+    max: 5,
+    min: 0,
+    acquire: 30000,
+    idle: 10000 // idle timeout in milliseconds
+  }
 };
